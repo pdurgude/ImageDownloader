@@ -13,7 +13,7 @@ public struct ImageDownloader {
     self.inflightRequestsManager = inflightRequestManager
   }
   
-  func downloadImage(for url: URL) async throws -> UIImage? {
+  public func downloadImage(for url: URL) async throws -> UIImage? {
     defer {
       Task {
         print("Defere - Will remove inflight requests for url \(url)")
