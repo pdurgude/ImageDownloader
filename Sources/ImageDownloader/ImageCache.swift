@@ -8,9 +8,25 @@ import Foundation
 import UIKit
 
 actor ImageCache {
+  
+  private struct ImageCacheKey: Hashable {
+    let urlString: String
+    let size: CGSize
+    
+    static func == (lhs: ImageCacheKey, rhs: ImageCacheKey) -> Bool {
+      return lhs.urlString == rhs.urlString && lhs.size == rhs.size
+    }
+    
+    func hash(into hasher: inout Hasher) {
+      hasher.combine(urlString)
+      hasher.combine(size.width)
+      hasher.combine(size.height)
+    }
+  }
+  
   static let shared = ImageCache()
   
-  private var imageCache = [String: UIImage]()
+  private var imageCache = [ImageCacheKey: UIImage]()
   
   private init() {
     Task {
@@ -26,14 +42,17 @@ actor ImageCache {
   }
   
   private func didRecieveMemoryWarning(notification: Notification) {
-      imageCache.removeAll()
+    imageCache.removeAll()
+  }
+
+  
+  func cachedImage(for url: String, size: CGSize = .zero) -> UIImage? {
+    var key = ImageCacheKey(urlString: url, size: size)
+    return imageCache[key]
   }
   
-  func cachedImage(for url: String) -> UIImage? {
-    imageCache[url]
-  }
-  
-  func cache(image: UIImage, for url: String) {
-      imageCache[url] = image
+  func cache(image: UIImage, for url: String, size: CGSize = .zero) {
+    let key = ImageCacheKey(urlString: url, size: size)
+    imageCache[key] = image
   }
 }

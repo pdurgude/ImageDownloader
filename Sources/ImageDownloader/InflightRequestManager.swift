@@ -31,8 +31,6 @@ extension InflightRequestManager {
   func removeInflightRequest(for url: URL) {
     guard isRequestInflight(for: url) else { return }
     
-    print("Will remove inflight requests for \(url)")
-    
     if let waitingContinuations = inflightRequests[url] {
       for continuation in waitingContinuations {
         continuation.resume()
